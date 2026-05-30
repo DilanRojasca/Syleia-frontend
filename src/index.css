@@ -1,0 +1,93 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-sand font-sans text-ink antialiased;
+  }
+
+  h1, h2, h3, h4, h5 {
+    @apply font-serif;
+  }
+
+  /* Elegant scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { @apply bg-sand; }
+  ::-webkit-scrollbar-thumb { @apply bg-line rounded-pill; }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center gap-2 px-7 py-3.5 bg-ink text-paper font-sans font-medium text-sm
+           rounded-pill transition-all duration-200 hover:bg-ink/80 active:scale-95 focus-visible:outline-none
+           focus-visible:ring-2 focus-visible:ring-ink/40;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center gap-2 px-7 py-3.5 bg-transparent text-ink font-sans font-medium text-sm
+           rounded-pill border border-line transition-all duration-200 hover:border-ink hover:bg-sand-dark
+           active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/20;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center gap-1.5 text-ink font-sans font-medium text-sm
+           transition-all duration-200 hover:gap-3 focus-visible:outline-none;
+  }
+
+  .btn-whatsapp {
+    @apply inline-flex items-center gap-2 px-6 py-3 bg-[#25D366] text-white font-sans font-medium text-sm
+           rounded-pill transition-all duration-200 hover:bg-[#20bd5a] active:scale-95 shadow-card;
+  }
+
+  .card {
+    @apply bg-paper rounded-card shadow-card overflow-hidden transition-all duration-300
+           hover:shadow-card-hover hover:-translate-y-1;
+  }
+
+  .price-toggle {
+    @apply inline-flex items-center bg-sand-dark rounded-pill p-1 gap-1;
+  }
+
+  .price-toggle-btn {
+    @apply px-4 py-1.5 rounded-pill text-sm font-sans font-medium transition-all duration-200 cursor-pointer;
+  }
+
+  .price-toggle-btn.active {
+    @apply bg-ink text-paper;
+  }
+
+  .price-toggle-btn:not(.active) {
+    @apply text-ink-soft hover:text-ink;
+  }
+
+  .section-title {
+    @apply font-serif text-heading text-ink;
+  }
+
+  .section-subtitle {
+    @apply font-sans text-base text-ink-soft mt-2;
+  }
+
+  /* Grain texture overlay */
+  .texture::before {
+    content: '';
+    @apply absolute inset-0 opacity-[0.025] pointer-events-none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    background-size: 200px 200px;
+  }
+}
+
+@layer utilities {
+  .text-balance { text-wrap: balance; }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+}
