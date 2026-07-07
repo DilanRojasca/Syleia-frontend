@@ -52,7 +52,7 @@ export function Hero() {
             <div className="col-span-2 aspect-[4/3] rounded-card overflow-hidden shadow-card-hover">
               <img
                 src="https://picsum.photos/seed/syleia-hero-main/800/600"
-                alt="Colección Syleia — scrunchies de satén"
+                alt="Colección SATINA — scrunchies de satén"
                 className="w-full h-full object-cover"
               />
             </div>
@@ -66,7 +66,7 @@ export function Hero() {
             <div className="aspect-square rounded-card overflow-hidden shadow-card">
               <img
                 src="https://picsum.photos/seed/syleia-hero-3/400/400"
-                alt="Combo Descanso Syleia"
+                alt="Combo Descanso SATINA"
                 className="w-full h-full object-cover"
               />
             </div>

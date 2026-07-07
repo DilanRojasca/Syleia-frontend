@@ -1,8 +1,8 @@
 import type { Product, ProductCategory } from '@/domain/catalog/types'
 
 export interface IProductRepository {
-  getAll(): Product[]
-  getBySlug(slug: string): Product | undefined
-  getByCategory(category: ProductCategory): Product[]
-  getFeatured(): Product[]
+  getAll(): Promise<Product[]>
+  getBySlug(slug: string): Promise<Product | undefined>
+  getByCategory(category: ProductCategory): Promise<Product[]>
+  getFeatured(): Promise<Product[]>
 }

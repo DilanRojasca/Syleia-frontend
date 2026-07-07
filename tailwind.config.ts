@@ -12,6 +12,7 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        bg: '#ECE6DA',
         sand: {
           DEFAULT: '#ECE6DA',
           dark: '#E2DAC8',
@@ -22,38 +23,42 @@ const config: Config = {
           soft: '#6B6055',
         },
         line: '#BDB2A1',
-        lilac: '#C9B8E8',
-        blush: '#F4C5C0',
-        champagne: '#F5E6C8',
-        mint: '#C5DDD3',
-        nude: '#E8D5C0',
-        'warm-gold': '#D4B896',
+        'line-soft': '#CDC5B5',
+        accent: {
+          DEFAULT: '#CCA09D',
+          deep: '#B5625C',
+          tint: '#F4EDED',
+          'tint-2': '#EDE2E1',
+        },
       },
       fontFamily: {
-        serif: ['var(--font-playfair)', 'Georgia', 'serif'],
-        sans: ['var(--font-dm-sans)', 'Inter', 'system-ui', 'sans-serif'],
+        serif: ['var(--font-serif)', 'Georgia', 'serif'],
+        sans: ['var(--font-sans)', 'system-ui', 'sans-serif'],
+        mono: ['var(--font-mono)', 'ui-monospace', 'monospace'],
       },
-      fontSize: {
-        display: ['clamp(2.8rem, 6vw, 4.5rem)', { lineHeight: '1.1', letterSpacing: '-0.02em' }],
-        heading: ['clamp(1.8rem, 3vw, 2.5rem)', { lineHeight: '1.2' }],
-        subheading: ['1.25rem', { lineHeight: '1.4' }],
+      borderRadius: {
+        sm: '2px',
+        DEFAULT: '2px',
+        md: '4px',
+        lg: '4px',
+        pill: '9999px',
+        card: '4px',
       },
       boxShadow: {
         card: '0 2px 12px rgba(59, 52, 43, 0.08)',
         'card-hover': '0 8px 32px rgba(59, 52, 43, 0.14)',
         sticky: '0 1px 0 #BDB2A1',
-      },
-      borderRadius: {
-        card: '12px',
-        pill: '9999px',
-      },
-      transitionTimingFunction: {
-        silk: 'cubic-bezier(0.4, 0, 0.2, 1)',
+        drawer: '-12px 0 40px rgba(40, 32, 28, 0.18)',
+        toast: '0 8px 30px rgba(40, 32, 28, 0.25)',
+        quickadd: '0 2px 10px rgba(48, 38, 32, 0.14)',
       },
       animation: {
         'fade-in': 'fadeIn 0.5s ease-out both',
         'slide-up': 'slideUp 0.6s ease-out both',
         marquee: 'marquee 24s linear infinite',
+        'drawer-in': 'drawerIn 0.3s cubic-bezier(0.2, 0.7, 0.2, 1)',
+        'toast-in': 'toastIn 0.25s cubic-bezier(0.2, 0.7, 0.2, 1)',
+        'veil-in': 'veilIn 0.25s ease',
       },
       keyframes: {
         fadeIn: {
@@ -67,6 +72,18 @@ const config: Config = {
         marquee: {
           from: { transform: 'translateX(0)' },
           to: { transform: 'translateX(-50%)' },
+        },
+        drawerIn: {
+          from: { transform: 'translateX(40px)', opacity: '0' },
+          to: { transform: 'translateX(0)', opacity: '1' },
+        },
+        toastIn: {
+          from: { transform: 'translate(-50%, 12px)', opacity: '0' },
+          to: { transform: 'translate(-50%, 0)', opacity: '1' },
+        },
+        veilIn: {
+          from: { opacity: '0' },
+          to: { opacity: '1' },
         },
       },
     },

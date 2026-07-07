@@ -14,7 +14,7 @@ const WhatsAppIcon = () => (
 )
 
 export function WhatsAppButton({
-  message = '¡Hola Syleia! Me gustaría hacer un pedido 🌸',
+  message = '¡Hola SATINA! Me gustaría hacer un pedido 🌸',
   label = 'Pedir por WhatsApp',
   variant = 'inline',
   className = '',

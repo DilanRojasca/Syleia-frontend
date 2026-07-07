@@ -1,112 +1,120 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useSearchParams, useRouter, usePathname } from 'next/navigation'
 import type { ProductCategory } from '@/domain/catalog/types'
-import type { PriceMode } from '@/domain/cart/types'
 import { useProducts } from '@/application/catalog/useProducts'
 import { ProductCard } from '@/shared/ui/ProductCard'
-import { PriceModeToggle } from '@/shared/ui/PriceDisplay'
-import { SocialProof } from '@/ui/catalog/sections/SocialProof'
 
-const CATEGORY_LABELS: Record<string, string> = {
-  all: 'Todos',
-  scrunchies: 'Scrunchies',
-  'combo-descanso': 'Combo Descanso',
-  gorros: 'Gorros',
-  fundas: 'Fundas',
-}
+const CATEGORIES: Array<ProductCategory | 'Todos'> = ['Todos', 'Nocturno', 'Diario', 'Peinado', 'Post-lavado']
+
+type SortKey = 'featured' | 'price-asc' | 'price-desc' | 'name'
 
 export function CatalogContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const pathname = usePathname()
 
-  const urlCategory = searchParams.get('categoria') ?? 'all'
-  const urlMode = (searchParams.get('modo') as PriceMode) ?? 'detal'
-
-  const [priceMode, setPriceMode] = useState<PriceMode>(urlMode)
-  const [activeCategory, setActiveCategory] = useState<ProductCategory | 'all'>(
-    urlCategory as ProductCategory | 'all',
+  const urlCategory = searchParams.get('categoria') ?? 'Todos'
+  const [sort, setSort] = useState<SortKey>('featured')
+  const [activeCategory, setActiveCategory] = useState<ProductCategory | 'Todos'>(
+    urlCategory as ProductCategory | 'Todos',
   )
 
-  const filtered = useProducts(activeCategory)
+  const { data: products = [], isLoading, isError } = useProducts(
+    activeCategory === 'Todos' ? 'all' : (activeCategory as ProductCategory),
+  )
 
-  const handleCategory = (cat: string) => {
-    setActiveCategory(cat as ProductCategory | 'all')
+  const sorted = useMemo(() => {
+    const list = [...products]
+    if (sort === 'price-asc') list.sort((a, b) => a.prices.detal - b.prices.detal)
+    if (sort === 'price-desc') list.sort((a, b) => b.prices.detal - a.prices.detal)
+    if (sort === 'name') list.sort((a, b) => a.name.localeCompare(b.name))
+    return list
+  }, [products, sort])
+
+  const handleCategory = (cat: ProductCategory | 'Todos') => {
+    setActiveCategory(cat)
     const params = new URLSearchParams(searchParams.toString())
-    if (cat === 'all') params.delete('categoria')
+    if (cat === 'Todos') params.delete('categoria')
     else params.set('categoria', cat)
     const qs = params.toString()
     router.replace(qs ? `${pathname}?${qs}` : pathname)
   }
 
-  const handleMode = (mode: PriceMode) => {
-    setPriceMode(mode)
-    const params = new URLSearchParams(searchParams.toString())
-    if (mode === 'detal') params.delete('modo')
-    else params.set('modo', mode)
-    const qs = params.toString()
-    router.replace(qs ? `${pathname}?${qs}` : pathname)
-  }
-
   return (
-    <>
-      <SocialProof />
-
-      <div className="max-w-7xl mx-auto px-6 lg:px-12 py-14 lg:py-20">
-
-        <div className="mb-10">
-          <h1 className="section-title">La tienda Syleia</h1>
-          <p className="section-subtitle">Satén que cuida. Colores que enamoran.</p>
-        </div>
-
-        {/* Toolbar */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-4 border-b border-line">
-          <div className="flex flex-wrap gap-2">
-            {Object.entries(CATEGORY_LABELS).map(([cat, label]) => (
-              <button
-                key={cat}
-                type="button"
-                onClick={() => handleCategory(cat)}
-                className={`px-4 py-1.5 rounded-pill text-sm font-sans transition-all duration-150 border ${
-                  activeCategory === cat
-                    ? 'bg-ink text-paper border-ink'
-                    : 'bg-transparent text-ink-soft border-line hover:border-ink-soft hover:text-ink'
-                }`}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-
-          <div className="flex items-center gap-3 self-start sm:self-auto">
-            <span className="text-xs font-sans text-ink-soft hidden sm:inline">Precio:</span>
-            <PriceModeToggle mode={priceMode} onChange={handleMode} />
-          </div>
-        </div>
-
-        {/* Products grid */}
-        {filtered.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 lg:gap-5 animate-fade-in">
-            {filtered.map(product => (
-              <ProductCard key={product.id} product={product} priceMode={priceMode} />
-            ))}
-          </div>
-        ) : (
-          <div className="flex flex-col items-center justify-center py-24 text-center gap-3">
-            <span className="text-4xl">🌸</span>
-            <p className="font-serif text-xl text-ink">No hay productos en esta categoría</p>
-            <button type="button" onClick={() => handleCategory('all')} className="btn-ghost mt-1">
-              Ver todos →
-            </button>
-          </div>
-        )}
-
-        <p className="text-xs font-sans text-ink-soft mt-8 text-right">
-          {filtered.length} {filtered.length === 1 ? 'producto' : 'productos'}
-        </p>
+    <div className="shell">
+      {/* Page head */}
+      <div className="pt-10 pb-7">
+        <span className="mono-label text-accent-deep">Catálogo 2026 · Vol. 01</span>
+        <h1 className="page-title mt-2">
+          Todos los <em>productos</em>
+        </h1>
       </div>
-    </>
+
+      {/* Filter bar */}
+      <div className="flex items-center justify-between gap-5 flex-wrap py-4 border-b border-line mb-9">
+        <div className="flex gap-2 flex-wrap">
+          {CATEGORIES.map(cat => (
+            <button
+              key={cat}
+              type="button"
+              onClick={() => handleCategory(cat)}
+              className={`font-mono text-[11px] tracking-[0.12em] uppercase px-4 py-2.5 border rounded-pill transition-all duration-150 ${
+                activeCategory === cat
+                  ? 'bg-ink border-ink text-paper'
+                  : 'border-line text-ink-soft hover:border-ink hover:text-ink'
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+        <select
+          value={sort}
+          onChange={e => setSort(e.target.value as SortKey)}
+          aria-label="Ordenar productos"
+          className="font-mono text-[11px] tracking-[0.1em] uppercase bg-transparent border border-line rounded-sm px-3 py-2.5 text-ink-soft focus:border-ink outline-none"
+        >
+          <option value="featured">Destacados</option>
+          <option value="price-asc">Precio: menor a mayor</option>
+          <option value="price-desc">Precio: mayor a menor</option>
+          <option value="name">Nombre A-Z</option>
+        </select>
+      </div>
+
+      {/* Grid */}
+      {isLoading ? (
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 lg:gap-[22px] pb-20">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} className="animate-pulse flex flex-col gap-3">
+              <div className="aspect-[1/1.08] bg-sand-dark rounded-card" />
+              <div className="h-5 bg-sand-dark rounded w-2/3" />
+              <div className="h-3 bg-sand-dark rounded w-1/2" />
+            </div>
+          ))}
+        </div>
+      ) : isError ? (
+        <div className="flex flex-col items-center justify-center py-24 text-center gap-3">
+          <p className="font-serif text-xl text-ink">No se pudieron cargar los productos</p>
+          <p className="text-sm text-ink-soft">Verifica tu conexión e intenta de nuevo.</p>
+        </div>
+      ) : sorted.length > 0 ? (
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 lg:gap-[22px] pb-20 animate-fade-in">
+          {sorted.map(product => (
+            <ProductCard key={product.id} product={product} />
+          ))}
+        </div>
+      ) : (
+        <div className="empty-state">
+          <div className="empty-mark">~</div>
+          <h2 className="font-serif font-normal text-[34px] mt-4 mb-2">Sin productos aqui</h2>
+          <p className="text-ink-soft mb-7">Prueba con otra categoria.</p>
+          <button type="button" onClick={() => handleCategory('Todos')} className="btn-ghost">
+            Ver todos
+          </button>
+        </div>
+      )}
+    </div>
   )
 }

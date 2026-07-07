@@ -9,81 +9,127 @@
 
   body {
     @apply bg-sand font-sans text-ink antialiased;
+    font-size: 15.5px;
+    line-height: 1.55;
   }
 
-  h1, h2, h3, h4, h5 {
-    @apply font-serif;
-  }
+  img { display: block; max-width: 100%; }
+  button { cursor: pointer; }
 
-  /* Elegant scrollbar */
   ::-webkit-scrollbar { width: 6px; }
   ::-webkit-scrollbar-track { @apply bg-sand; }
   ::-webkit-scrollbar-thumb { @apply bg-line rounded-pill; }
 }
 
 @layer components {
+  /* --- Buttons --- */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2
+           font-mono text-[11.5px] tracking-[0.14em] uppercase
+           px-7 py-[15px] rounded-sm border border-transparent
+           transition-all duration-150;
+  }
   .btn-primary {
-    @apply inline-flex items-center gap-2 px-7 py-3.5 bg-ink text-paper font-sans font-medium text-sm
-           rounded-pill transition-all duration-200 hover:bg-ink/80 active:scale-95 focus-visible:outline-none
-           focus-visible:ring-2 focus-visible:ring-ink/40;
+    @apply btn bg-ink text-paper hover:bg-ink/90 active:scale-[0.98];
   }
-
-  .btn-secondary {
-    @apply inline-flex items-center gap-2 px-7 py-3.5 bg-transparent text-ink font-sans font-medium text-sm
-           rounded-pill border border-line transition-all duration-200 hover:border-ink hover:bg-sand-dark
-           active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/20;
+  .btn-accent {
+    @apply btn bg-accent-deep text-white hover:bg-accent-deep/90 active:scale-[0.98];
   }
-
   .btn-ghost {
-    @apply inline-flex items-center gap-1.5 text-ink font-sans font-medium text-sm
-           transition-all duration-200 hover:gap-3 focus-visible:outline-none;
+    @apply btn border-ink text-ink hover:bg-ink hover:text-paper active:scale-[0.98];
   }
-
+  .btn-quiet {
+    @apply btn text-ink-soft hover:text-ink px-3 py-2;
+  }
   .btn-whatsapp {
-    @apply inline-flex items-center gap-2 px-6 py-3 bg-[#25D366] text-white font-sans font-medium text-sm
-           rounded-pill transition-all duration-200 hover:bg-[#20bd5a] active:scale-95 shadow-card;
+    @apply btn bg-[#25D366] text-white border-transparent hover:bg-[#20bd5a] active:scale-[0.98];
+  }
+  .btn-block { @apply w-full; }
+  .btn[disabled] { @apply opacity-40 pointer-events-none; }
+
+  /* --- Mono label --- */
+  .mono-label {
+    @apply font-mono text-[11px] tracking-[0.18em] uppercase text-ink-soft;
   }
 
+  /* --- Cards --- */
   .card {
-    @apply bg-paper rounded-card shadow-card overflow-hidden transition-all duration-300
-           hover:shadow-card-hover hover:-translate-y-1;
+    @apply bg-paper rounded-card overflow-hidden transition-all duration-300
+           hover:shadow-card-hover hover:-translate-y-0.5;
   }
 
+  /* --- Section scaffolding --- */
+  .shell {
+    @apply max-w-[1280px] mx-auto px-5 sm:px-8 lg:px-14;
+  }
+  .section {
+    @apply py-11 lg:py-[4.75rem];
+  }
+  .section + .section {
+    @apply border-t border-line;
+  }
+
+  /* --- Page heading --- */
+  .page-title {
+    @apply font-serif font-normal text-[clamp(2.25rem,4.4vw,3.625rem)] tracking-[-0.015em] leading-none;
+  }
+  .page-title em { @apply italic text-accent-deep not-italic; font-style: italic; }
+
+  /* --- Price toggle (detal/mayor) --- */
   .price-toggle {
     @apply inline-flex items-center bg-sand-dark rounded-pill p-1 gap-1;
   }
-
   .price-toggle-btn {
-    @apply px-4 py-1.5 rounded-pill text-sm font-sans font-medium transition-all duration-200 cursor-pointer;
+    @apply px-4 py-1.5 rounded-pill font-mono text-[11px] tracking-[0.1em] uppercase
+           transition-all duration-150 cursor-pointer;
+  }
+  .price-toggle-btn.active { @apply bg-ink text-paper; }
+  .price-toggle-btn:not(.active) { @apply text-ink-soft hover:text-ink; }
+
+  /* --- Summary card (cart) --- */
+  .summary-card {
+    @apply bg-paper border border-line rounded-card p-6 sticky top-24 flex flex-col gap-3;
   }
 
-  .price-toggle-btn.active {
-    @apply bg-ink text-paper;
+  /* --- Empty state --- */
+  .empty-state { @apply text-center py-24; }
+  .empty-mark { @apply font-serif italic text-[64px] text-accent leading-none; }
+
+  /* --- Accordion --- */
+  .accordion { @apply border-t border-line mt-8; }
+  .accordion-item { @apply border-b border-line; }
+  .accordion-trigger {
+    @apply w-full flex justify-between items-center py-[17px] px-0.5
+           font-mono text-[11.5px] tracking-[0.16em] uppercase;
+  }
+  .accordion-body {
+    @apply pb-5 px-0.5 text-[14px] text-ink-soft max-w-[480px];
   }
 
-  .price-toggle-btn:not(.active) {
-    @apply text-ink-soft hover:text-ink;
+  /* --- Feature pills --- */
+  .feature-pill {
+    @apply font-mono text-[10.5px] tracking-[0.1em] uppercase
+           px-3 py-1.5 bg-accent-tint text-accent-deep rounded-pill;
   }
 
-  .section-title {
-    @apply font-serif text-heading text-ink;
+  /* --- Status badges --- */
+  .status-badge {
+    @apply font-mono text-[10px] tracking-[0.12em] uppercase px-3 py-1 rounded-pill;
   }
 
-  .section-subtitle {
-    @apply font-sans text-base text-ink-soft mt-2;
+  /* --- Form fields --- */
+  .field { @apply flex flex-col gap-1.5; }
+  .field label { @apply mono-label; }
+  .field input, .field textarea, .field select {
+    @apply bg-paper border border-line rounded-sm px-3.5 py-3 text-[14.5px]
+           transition-colors duration-150 outline-none focus:border-ink;
   }
-
-  /* Grain texture overlay */
-  .texture::before {
-    content: '';
-    @apply absolute inset-0 opacity-[0.025] pointer-events-none;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-    background-size: 200px 200px;
-  }
+  .field textarea { @apply resize-y min-h-[84px]; }
 }
 
 @layer utilities {
   .text-balance { text-wrap: balance; }
+  .text-pretty { text-wrap: pretty; }
 
   .scrollbar-hide {
     -ms-overflow-style: none;

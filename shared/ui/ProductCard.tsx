@@ -1,90 +1,70 @@
 'use client'
 
-import { useState } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import type { Product } from '@/domain/catalog/types'
-import type { PriceMode } from '@/domain/cart/types'
 import { formatPrice } from '@/shared/lib/formatters'
-import { ColorSwatch } from './ColorSwatch'
-import { Badge } from './Badge'
+import { useCart } from '@/application/cart/useCart'
 
 interface ProductCardProps {
   product: Product
-  priceMode: PriceMode
 }
 
-export function ProductCard({ product, priceMode }: ProductCardProps) {
-  const [activeColor, setActiveColor] = useState(product.colors[0])
-  const price = priceMode === 'mayor' ? product.prices.mayor : product.prices.detal
+function PlusIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path d="M12 5v14M5 12h14" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+export function ProductCard({ product }: ProductCardProps) {
+  const { addItem } = useCart()
 
   return (
-    <Link href={`/producto/${product.slug}`} className="group block">
-      <article className="card">
-        {/* Image */}
-        <div className="relative aspect-square overflow-hidden bg-sand">
-          <img
+    <article className="flex flex-col group">
+      {/* Media */}
+      <div className="relative bg-accent-tint rounded-card overflow-hidden aspect-[1/1.08]">
+        <Link href={`/producto/${product.slug}`}>
+          <Image
             src={product.images[0]}
             alt={product.name}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-            loading="lazy"
+            fill
+            className="object-cover mix-blend-multiply transition-transform duration-[450ms] group-hover:scale-[1.045]"
+            sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
           />
+        </Link>
 
-          {/* Badges */}
-          <div className="absolute top-3 left-3 flex flex-col gap-1.5">
-            {product.isNew && <Badge variant="new">Nuevo</Badge>}
-            {priceMode === 'mayor' && <Badge variant="mayor">Mayor</Badge>}
-          </div>
+        <span className="absolute top-3 left-3 font-mono text-[9.5px] tracking-[0.16em] uppercase bg-paper/90 text-ink-soft px-2.5 py-1.5 rounded-sm">
+          {product.category}
+        </span>
 
-          {/* Quick action overlay */}
-          <div className="absolute inset-0 flex items-end justify-center pb-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-            <span className="bg-paper/90 backdrop-blur-sm text-ink text-xs font-sans font-medium px-5 py-2 rounded-pill shadow-card">
-              Ver producto →
-            </span>
-          </div>
-        </div>
+        {product.isNew && (
+          <span className="absolute top-3 right-3 font-mono text-[9.5px] tracking-[0.12em] uppercase bg-accent-deep text-white px-2.5 py-1.5 rounded-sm">
+            Nuevo
+          </span>
+        )}
 
-        {/* Info */}
-        <div className="p-4 flex flex-col gap-3">
-          <div>
-            <p className="text-xs font-sans text-ink-soft uppercase tracking-widest mb-1">
-              {product.category === 'scrunchies' && 'Scrunchies'}
-              {product.category === 'combo-descanso' && 'Combo Descanso'}
-              {product.category === 'gorros' && 'Gorros'}
-              {product.category === 'fundas' && 'Fundas'}
-            </p>
-            <h3 className="font-serif text-base font-medium text-ink leading-snug">
-              {product.name}
-            </h3>
-          </div>
+        <button
+          type="button"
+          title="Agregar a la bolsa"
+          onClick={() => addItem(product, '', 1)}
+          className="absolute right-3 bottom-3 w-[42px] h-[42px] grid place-items-center bg-paper rounded-full shadow-quickadd opacity-0 translate-y-1.5 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 hover:bg-ink hover:text-paper text-ink"
+        >
+          <PlusIcon />
+        </button>
+      </div>
 
-          <div className="flex items-center justify-between">
-            <span className="font-serif text-lg font-semibold text-ink">
-              {formatPrice(price)}
-            </span>
-            {priceMode === 'mayor' && (
-              <span className="text-xs font-sans text-ink-soft">
-                mín. {product.prices.mayorMin}u
-              </span>
-            )}
-          </div>
-
-          {/* Color swatches */}
-          {product.colors.length > 1 && (
-            <div className="flex items-center gap-1.5" onClick={e => e.preventDefault()}>
-              {product.colors.map(c => (
-                <ColorSwatch
-                  key={c.slug}
-                  color={c}
-                  size="sm"
-                  selected={activeColor.slug === c.slug}
-                  onClick={() => setActiveColor(c)}
-                />
-              ))}
-              <span className="text-xs text-ink-soft ml-1 font-sans">{activeColor.name}</span>
-            </div>
-          )}
-        </div>
-      </article>
-    </Link>
+      {/* Body */}
+      <div className="pt-3.5 px-0.5 flex flex-col gap-1">
+        <h3 className="font-serif text-[21px] font-medium leading-[1.15]">
+          <Link href={`/producto/${product.slug}`} className="hover:text-accent-deep transition-colors">
+            {product.name}
+          </Link>
+        </h3>
+        <span className="text-[13px] text-ink-soft">{product.tagline}</span>
+        <span className="font-mono text-[13px] mt-1.5">{formatPrice(product.prices.detal)}</span>
+      </div>
+    </article>
   )
 }

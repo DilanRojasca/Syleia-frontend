@@ -1,126 +1,84 @@
 import Link from 'next/link'
 
+function BrandMark({ size = 26 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 40 40" fill="none" className="text-ink-soft">
+      <circle cx="20" cy="20" r="19" stroke="currentColor" strokeWidth="0.8" opacity="0.5" />
+      <path d="M13 14 Q20 8 27 14 Q22 20 27 26 Q20 32 13 26 Q18 20 13 14 Z" fill="currentColor" opacity="0.85" />
+    </svg>
+  )
+}
+
 const LINKS_TIENDA = [
-  { href: '/tienda', label: 'Todos los productos' },
-  { href: '/tienda?categoria=scrunchies', label: 'Scrunchies' },
-  { href: '/tienda?categoria=combo-descanso', label: 'Combos Descanso' },
-  { href: '/tienda?modo=mayor', label: 'Por Mayor' },
+  { href: '/tienda', label: 'Catálogo completo' },
+  { href: '/tienda?categoria=Nocturno', label: 'Línea nocturna' },
+  { href: '/tienda?categoria=Diario', label: 'Uso diario' },
+  { href: '/ritual', label: 'El ritual SATINA' },
 ]
 
-const LINKS_INFO = [
-  { href: '/como-comprar', label: 'Cómo comprar' },
-  { href: '/envios', label: 'Envíos y tiempos' },
-  { href: '/preguntas-frecuentes', label: 'Preguntas frecuentes' },
-  { href: '/politica-devoluciones', label: 'Devoluciones' },
+const LINKS_AYUDA = [
+  { href: '/checkout', label: 'Cómo comprar' },
+  { href: '/carrito', label: 'Mi bolsa' },
 ]
 
 export function Footer() {
   return (
-    <footer className="bg-ink text-paper/80">
-      <div className="max-w-7xl mx-auto px-6 lg:px-12 py-16 lg:py-20">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-12">
+    <footer className="border-t border-line mt-10">
+      <div className="shell">
+        <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr_1fr] gap-10 py-12 lg:py-[52px]">
 
-          {/* Brand column */}
-          <div className="col-span-2 lg:col-span-1 flex flex-col gap-4">
-            <span className="font-serif text-3xl italic text-paper">Syleia</span>
-            <p className="font-sans text-sm text-paper/60 leading-relaxed max-w-xs">
-              Accesorios de satén que cuidan tu cabello y hacen tu descanso más bonito.
-              Hecho con amor en Colombia.
+          {/* Brand */}
+          <div>
+            <Link href="/" className="flex items-center gap-3">
+              <BrandMark size={26} />
+              <span className="font-serif italic text-[23px] font-medium">SATINA</span>
+            </Link>
+            <p className="text-[13.5px] text-ink-soft max-w-[300px] mt-3 leading-relaxed">
+              Accesorios de satín y microfibra pensados para cuidar tu cabello todos los días — y todas las noches.
             </p>
-            <div className="flex items-center gap-3 mt-2">
-              <a
-                href="https://instagram.com/syleia.co"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Instagram de Syleia"
-                className="text-paper/60 hover:text-paper transition-colors duration-150"
-              >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-                  <path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z" />
-                  <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
-                </svg>
-              </a>
-              <a
-                href="https://tiktok.com/@syleia.co"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="TikTok de Syleia"
-                className="text-paper/60 hover:text-paper transition-colors duration-150"
-              >
-                <svg width="16" height="18" viewBox="0 0 16 18" fill="currentColor">
-                  <path d="M11.97 0h-2.6v12.3a2.77 2.77 0 01-2.76 2.77 2.77 2.77 0 01-2.77-2.77 2.77 2.77 0 012.77-2.76c.27 0 .53.04.77.11V6.97A5.38 5.38 0 006.61 6.8a5.38 5.38 0 00-5.37 5.38A5.38 5.38 0 006.61 17.56a5.38 5.38 0 005.36-5.38V5.97A8.08 8.08 0 0016 7.26V4.64a5.49 5.49 0 01-4.03-4.64z" />
-                </svg>
-              </a>
-            </div>
           </div>
 
           {/* Tienda */}
-          <div className="flex flex-col gap-3">
-            <h4 className="font-sans text-xs font-medium tracking-widest uppercase text-paper/40 mb-1">
+          <div className="flex flex-col">
+            <h4 className="font-mono text-[10.5px] tracking-[0.18em] uppercase text-ink-soft mb-4 font-medium">
               Tienda
             </h4>
-            {LINKS_TIENDA.map(l => (
-              <Link
-                key={l.href}
-                href={l.href}
-                className="font-sans text-sm text-paper/70 hover:text-paper transition-colors duration-150"
-              >
-                {l.label}
-              </Link>
-            ))}
+            <nav className="flex flex-col gap-2.5">
+              {LINKS_TIENDA.map(l => (
+                <Link key={l.href} href={l.href} className="text-[14px] text-ink hover:text-accent-deep transition-colors">
+                  {l.label}
+                </Link>
+              ))}
+            </nav>
           </div>
 
-          {/* Información */}
-          <div className="flex flex-col gap-3">
-            <h4 className="font-sans text-xs font-medium tracking-widest uppercase text-paper/40 mb-1">
-              Información
+          {/* Ayuda */}
+          <div className="flex flex-col">
+            <h4 className="font-mono text-[10.5px] tracking-[0.18em] uppercase text-ink-soft mb-4 font-medium">
+              Ayuda
             </h4>
-            {LINKS_INFO.map(l => (
-              <Link
-                key={l.href}
-                href={l.href}
-                className="font-sans text-sm text-paper/70 hover:text-paper transition-colors duration-150"
+            <nav className="flex flex-col gap-2.5">
+              {LINKS_AYUDA.map(l => (
+                <Link key={l.href} href={l.href} className="text-[14px] text-ink hover:text-accent-deep transition-colors">
+                  {l.label}
+                </Link>
+              ))}
+              <a
+                href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? '573001234567'}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[14px] text-ink hover:text-accent-deep transition-colors"
               >
-                {l.label}
-              </Link>
-            ))}
-          </div>
-
-          {/* Contacto */}
-          <div className="flex flex-col gap-3">
-            <h4 className="font-sans text-xs font-medium tracking-widest uppercase text-paper/40 mb-1">
-              Contacto
-            </h4>
-            <a
-              href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? '573001234567'}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-sans text-sm text-paper/70 hover:text-paper transition-colors duration-150"
-            >
-              WhatsApp +57 300 123 4567
-            </a>
-            <a
-              href="mailto:hola@syleia.co"
-              className="font-sans text-sm text-paper/70 hover:text-paper transition-colors duration-150"
-            >
-              hola@syleia.co
-            </a>
-            <p className="font-sans text-xs text-paper/40 mt-2 leading-relaxed">
-              Medellín, Colombia<br />
-              Lun–Sáb · 8 am – 6 pm
-            </p>
+                WhatsApp
+              </a>
+            </nav>
           </div>
         </div>
 
         {/* Bottom bar */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-12 pt-6 border-t border-paper/10">
-          <p className="font-sans text-xs text-paper/40">
-            © {new Date().getFullYear()} Syleia. Hecho con amor en Colombia.
-          </p>
-          <p className="font-sans text-xs text-paper/30 italic font-serif">
-            Suavidad que se siente
-          </p>
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 py-4 border-t border-line-soft font-mono text-[10.5px] tracking-[0.14em] uppercase text-ink-soft">
+          <span>© {new Date().getFullYear()} SATINA</span>
+          <span>Hecho con satín · Colombia</span>
         </div>
       </div>
     </footer>

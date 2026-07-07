@@ -15,7 +15,7 @@ export function SocialProof() {
       <div
         className="flex gap-0 whitespace-nowrap animate-marquee"
         style={{ width: 'max-content' }}
-        aria-label="Beneficios Syleia"
+        aria-label="Beneficios SATINA"
       >
         {doubled.map((item, i) => (
           <span

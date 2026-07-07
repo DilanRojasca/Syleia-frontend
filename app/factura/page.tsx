@@ -48,7 +48,7 @@ export default function FacturaPage() {
         <div className="bg-sand-dark px-8 py-6 border-b border-line">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <p className="font-serif text-3xl italic text-ink">Syleia</p>
+              <p className="font-serif text-3xl italic text-ink">SATINA</p>
               <p className="text-xs text-ink-soft mt-0.5 font-sans">Suavidad que se siente</p>
             </div>
             <div className="text-right">
@@ -147,7 +147,7 @@ export default function FacturaPage() {
         <div className="px-8 py-5 border-t border-line/60 flex flex-col sm:flex-row items-center justify-between gap-2">
           <p className="font-serif text-sm italic text-ink-soft">¡Gracias por tu compra! ♡</p>
           <p className="font-sans text-xs text-ink-soft">
-            @syleia.co · hola@syleia.co · +57 300 123 4567
+            @satina.co · hola@satina.co · +57 300 123 4567
           </p>
         </div>
       </div>

@@ -5,35 +5,25 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useCart } from '@/application/cart/useCart'
 
+function BrandMark({ size = 30 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 40 40" fill="none" className="text-accent-deep">
+      <circle cx="20" cy="20" r="19" stroke="currentColor" strokeWidth="0.8" opacity="0.5" />
+      <path d="M13 14 Q20 8 27 14 Q22 20 27 26 Q20 32 13 26 Q18 20 13 14 Z" fill="currentColor" opacity="0.85" />
+    </svg>
+  )
+}
+
 const NAV_LINKS = [
   { href: '/', label: 'Inicio', exact: true },
-  { href: '/tienda', label: 'Tienda', exact: false },
-  { href: '/tienda?modo=mayor', label: 'Por Mayor', exact: false },
+  { href: '/tienda', label: 'Catálogo', exact: false },
+  { href: '/ritual', label: 'El ritual', exact: true },
 ]
-
-const CartIcon = ({ count }: { count: number }) => (
-  <Link
-    href="/carrito"
-    aria-label={`Carrito — ${count} productos`}
-    className="relative p-2 text-ink-soft hover:text-ink transition-colors duration-150"
-  >
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M6 2 3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
-      <line x1="3" y1="6" x2="21" y2="6" />
-      <path d="M16 10a4 4 0 01-8 0" />
-    </svg>
-    {count > 0 && (
-      <span className="absolute -top-0.5 -right-0.5 w-4.5 h-4.5 min-w-[1.1rem] min-h-[1.1rem] bg-ink text-paper text-[10px] font-sans font-bold rounded-full flex items-center justify-center leading-none px-0.5">
-        {count > 9 ? '9+' : count}
-      </span>
-    )}
-  </Link>
-)
 
 export function Header() {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
-  const { totalItems } = useCart()
+  const { totalItems, isDrawerOpen, setDrawerOpen } = useCart()
   const pathname = usePathname()
 
   useEffect(() => {
@@ -42,113 +32,120 @@ export function Header() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  // Close mobile menu on route change
-  useEffect(() => {
-    setMenuOpen(false)
-  }, [pathname])
+  useEffect(() => { setMenuOpen(false) }, [pathname])
 
-  const isActive = (href: string, exact: boolean) => {
-    if (exact) return pathname === href
-    return pathname.startsWith(href.split('?')[0])
-  }
+  const isActive = (href: string, exact: boolean) =>
+    exact ? pathname === href : pathname.startsWith(href.split('?')[0])
 
   return (
-    <header
-      className={`sticky top-0 z-50 transition-all duration-300 ${
-        scrolled ? 'bg-paper/90 backdrop-blur-md shadow-sticky' : 'bg-paper'
-      }`}
-    >
-      <div className="max-w-7xl mx-auto px-6 lg:px-12 h-[72px] flex items-center gap-6">
-
-        {/* Logo */}
-        <Link
-          href="/"
-          className="font-serif text-[1.7rem] italic font-normal text-ink tracking-[-0.01em] mr-auto lg:mr-0"
-          aria-label="Syleia — Inicio"
-        >
-          Syleia
-        </Link>
-
-        {/* Desktop nav */}
-        <nav className="hidden lg:flex items-center gap-8 mx-auto" aria-label="Navegación principal">
-          {NAV_LINKS.map(link => (
-            <Link
-              key={link.href + link.label}
-              href={link.href}
-              className={`font-sans text-sm font-medium transition-colors duration-150 ${
-                isActive(link.href, link.exact) ? 'text-ink' : 'text-ink-soft hover:text-ink'
-              }`}
-            >
-              {link.label}
-            </Link>
-          ))}
-        </nav>
-
-        {/* Right actions */}
-        <div className="flex items-center gap-2">
-          <a
-            href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? '573001234567'}?text=Hola%20Syleia%21`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hidden lg:inline-flex btn-secondary py-2 px-4 text-xs"
-            aria-label="Contactar por WhatsApp"
-          >
-            WhatsApp
-          </a>
-          <CartIcon count={totalItems} />
-
-          {/* Hamburger */}
-          <button
-            type="button"
-            className="lg:hidden p-2 text-ink-soft hover:text-ink transition-colors"
-            onClick={() => setMenuOpen(prev => !prev)}
-            aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'}
-            aria-expanded={menuOpen}
-          >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-              {menuOpen ? (
-                <>
-                  <line x1="18" y1="6" x2="6" y2="18" />
-                  <line x1="6" y1="6" x2="18" y2="18" />
-                </>
-              ) : (
-                <>
-                  <line x1="3" y1="8" x2="21" y2="8" />
-                  <line x1="3" y1="16" x2="21" y2="16" />
-                </>
-              )}
-            </svg>
-          </button>
-        </div>
+    <>
+      {/* Announce bar */}
+      <div className="bg-ink text-sand text-center font-mono text-[10.5px] tracking-[0.2em] uppercase py-2.5 px-4">
+        Envíos a toda Colombia · Pedido por WhatsApp
       </div>
 
-      {/* Mobile menu */}
-      {menuOpen && (
-        <nav
-          className="lg:hidden bg-paper border-t border-line px-6 py-4 flex flex-col gap-1"
-          aria-label="Menú móvil"
-        >
-          {NAV_LINKS.map(link => (
-            <Link
-              key={link.href + link.label}
-              href={link.href}
-              className={`font-sans text-base py-2.5 border-b border-line/50 last:border-0 transition-colors ${
-                isActive(link.href, link.exact) ? 'text-ink font-medium' : 'text-ink-soft'
-              }`}
+      <header
+        className={`sticky top-0 z-50 border-b border-line transition-all duration-300 ${
+          scrolled
+            ? 'bg-sand/88 backdrop-blur-[12px]'
+            : 'bg-sand'
+        }`}
+      >
+        <div className="shell flex items-center justify-between gap-6 py-3.5">
+
+          {/* Brand */}
+          <Link href="/" className="flex items-center gap-3" aria-label="SATINA — Inicio">
+            <BrandMark size={30} />
+            <div className="flex flex-col leading-none">
+              <span className="font-serif italic text-[27px] font-medium leading-none">SATINA</span>
+              <span className="font-mono text-[9px] tracking-[0.22em] uppercase text-ink-soft mt-1">
+                cuidado capilar · satín
+              </span>
+            </div>
+          </Link>
+
+          {/* Desktop nav */}
+          <nav className="hidden lg:flex gap-7" aria-label="Navegación principal">
+            {NAV_LINKS.map(link => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`font-mono text-[11px] tracking-[0.16em] uppercase py-1.5 border-b transition-all duration-150 ${
+                  isActive(link.href, link.exact)
+                    ? 'text-ink border-accent-deep'
+                    : 'text-ink-soft border-transparent hover:text-ink'
+                }`}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
+
+          {/* Actions */}
+          <div className="flex items-center gap-1.5">
+            {/* Cart button */}
+            <button
+              type="button"
+              onClick={() => setDrawerOpen(true)}
+              className="relative grid place-items-center w-10 h-10 rounded-full text-ink transition-colors hover:bg-accent-tint"
+              title="Bolsa de compras"
+              aria-label={`Bolsa — ${totalItems} productos`}
             >
-              {link.label}
-            </Link>
-          ))}
-          <a
-            href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? '573001234567'}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn-whatsapp mt-3 justify-center"
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <path d="M5 8h14l-1.1 12H6.1L5 8Z" strokeLinejoin="round" />
+                <path d="M9 10V6.5a3 3 0 0 1 6 0V10" strokeLinecap="round" />
+              </svg>
+              {totalItems > 0 && (
+                <span className="absolute top-0.5 right-0 min-w-[17px] h-[17px] px-1 grid place-items-center bg-accent-deep text-white rounded-full font-mono text-[9.5px] leading-none">
+                  {totalItems > 9 ? '9+' : totalItems}
+                </span>
+              )}
+            </button>
+
+            {/* Hamburger */}
+            <button
+              type="button"
+              className="lg:hidden grid place-items-center w-10 h-10 rounded-full text-ink hover:bg-accent-tint transition-colors"
+              onClick={() => setMenuOpen(prev => !prev)}
+              aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'}
+              aria-expanded={menuOpen}
+            >
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+                {menuOpen ? (
+                  <>
+                    <path d="M6 6l12 12M18 6L6 18" />
+                  </>
+                ) : (
+                  <>
+                    <line x1="3" y1="8" x2="21" y2="8" />
+                    <line x1="3" y1="16" x2="21" y2="16" />
+                  </>
+                )}
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile menu */}
+        {menuOpen && (
+          <nav
+            className="lg:hidden bg-sand border-t border-line px-5 py-3 flex flex-col"
+            aria-label="Menú móvil"
           >
-            Pedir por WhatsApp
-          </a>
-        </nav>
-      )}
-    </header>
+            {NAV_LINKS.map(link => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`font-mono text-[11px] tracking-[0.16em] uppercase py-3.5 border-b border-line/50 last:border-0 transition-colors ${
+                  isActive(link.href, link.exact) ? 'text-ink' : 'text-ink-soft'
+                }`}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
+        )}
+      </header>
+    </>
   )
 }

@@ -1,224 +1,231 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
+import Image from 'next/image'
 import Link from 'next/link'
-import type { PriceMode } from '@/domain/cart/types'
 import { useProductDetail } from '@/application/catalog/useProductDetail'
 import { useProducts } from '@/application/catalog/useProducts'
 import { useCart } from '@/application/cart/useCart'
 import { formatPrice } from '@/shared/lib/formatters'
-import { ColorSwatch } from '@/shared/ui/ColorSwatch'
-import { PriceModeToggle, PriceTag } from '@/shared/ui/PriceDisplay'
-import { WhatsAppButton } from '@/shared/ui/WhatsAppButton'
-import { Badge } from '@/shared/ui/Badge'
 import { ProductCard } from '@/shared/ui/ProductCard'
+
+function QtyStepper({ value, onChange, max = 99 }: { value: number; onChange: (v: number) => void; max?: number }) {
+  return (
+    <div className="flex items-center border border-line rounded-sm bg-paper">
+      <button
+        type="button"
+        onClick={() => onChange(Math.max(1, value - 1))}
+        className="w-[42px] h-full min-h-[48px] flex items-center justify-center text-ink-soft hover:text-ink transition-colors text-[17px]"
+        aria-label="Menos"
+      >
+        -
+      </button>
+      <span className="min-w-[36px] text-center font-mono text-[14px]">{value}</span>
+      <button
+        type="button"
+        onClick={() => onChange(Math.min(max, value + 1))}
+        className="w-[42px] h-full min-h-[48px] flex items-center justify-center text-ink-soft hover:text-ink transition-colors text-[17px]"
+        aria-label="Mas"
+      >
+        +
+      </button>
+    </div>
+  )
+}
+
+const ACCORDION_EXTRA = [
+  { id: 'cuidado', label: 'Cuidado de la pieza', body: 'Lava a mano con agua fria y jabon suave. No uses secadora ni plancha directa: deja secar a la sombra para conservar el brillo del satin.' },
+  { id: 'envio', label: 'Envio y entrega', body: 'Confirmas tu pedido por WhatsApp y coordinamos el envio a toda Colombia. Tiempo estimado: 2-5 dias habiles segun tu ciudad.' },
+]
 
 export default function ProductDetailPage() {
   const { slug } = useParams<{ slug: string }>()
-  const { addItem } = useCart()
-  const product = useProductDetail(slug ?? '')
-  const allInCategory = useProducts(product?.category)
+  const { addItem, setDrawerOpen } = useCart()
+  const { data: product, isLoading, isError } = useProductDetail(slug ?? '')
+  const { data: allInCategory = [] } = useProducts(product?.category)
 
   const [activeImage, setActiveImage] = useState(0)
-  const [selectedColor, setSelectedColor] = useState(product?.colors[0] ?? null)
-  const [priceMode, setPriceMode] = useState<PriceMode>('detal')
   const [quantity, setQuantity] = useState(1)
-  const [added, setAdded] = useState(false)
+  const [openAcc, setOpenAcc] = useState<string | null>('detalles')
 
-  if (!product) {
+  useEffect(() => {
+    setActiveImage(0)
+    setQuantity(1)
+    window.scrollTo(0, 0)
+  }, [slug])
+
+  if (isLoading) {
     return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4 px-6">
-        <span className="text-5xl">🌸</span>
-        <h1 className="font-serif text-2xl text-ink">Producto no encontrado</h1>
-        <Link href="/tienda" className="btn-primary">Volver a la tienda</Link>
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <div className="animate-pulse flex flex-col items-center gap-4">
+          <div className="w-16 h-16 rounded-full bg-sand-dark" />
+          <div className="h-4 w-32 bg-sand-dark rounded" />
+        </div>
       </div>
     )
   }
 
-  const related = allInCategory.filter(p => p.id !== product.id).slice(0, 4)
-
-  const handleAddToCart = () => {
-    if (!selectedColor) return
-    addItem(product, selectedColor.slug, quantity)
-    setAdded(true)
-    setTimeout(() => setAdded(false), 2000)
+  if (isError || !product) {
+    return (
+      <div className="shell empty-state">
+        <div className="empty-mark">?</div>
+        <h2 className="font-serif font-normal text-[34px] mt-4 mb-2">Producto no encontrado</h2>
+        <Link href="/tienda" className="btn btn-ghost mt-4">Volver al catalogo</Link>
+      </div>
+    )
   }
 
-  const waMessage = `¡Hola Syleia! Me interesa el producto: ${product.name} (${selectedColor?.name ?? ''}) — precio ${priceMode === 'mayor' ? 'por mayor' : 'detal'}: ${formatPrice(priceMode === 'mayor' ? product.prices.mayor : product.prices.detal)} 🌸`
+  const related = allInCategory
+    .filter(p => p.id !== product.id)
+    .concat(allInCategory.filter(p => p.id !== product.id))
+    .slice(0, 4)
+
+  const waNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? '573001234567'
+  const waMessage = `Hola SATINA! Me interesa: ${product.name} x${quantity} - ${formatPrice(product.prices.detal * quantity)}`
+
+  const handleAdd = () => {
+    addItem(product, '', quantity)
+    setDrawerOpen(true)
+  }
+
+  const accordions = [
+    { id: 'detalles', label: 'Detalles', body: product.description },
+    ...ACCORDION_EXTRA,
+  ]
 
   return (
-    <div className="max-w-7xl mx-auto px-6 lg:px-12 py-10 lg:py-16">
+    <main>
+      <div className="shell">
+        {/* Breadcrumb */}
+        <nav className="flex items-center gap-2.5 pt-5 mono-label">
+          <Link href="/" className="hover:text-ink transition-colors">Inicio</Link>
+          <span>/</span>
+          <Link href="/tienda" className="hover:text-ink transition-colors">Catalogo</Link>
+          <span>/</span>
+          <span className="text-ink">{product.name}</span>
+        </nav>
 
-      <nav className="flex items-center gap-2 text-xs font-sans text-ink-soft mb-8" aria-label="Breadcrumb">
-        <Link href="/" className="hover:text-ink transition-colors">Inicio</Link>
-        <span aria-hidden>›</span>
-        <Link href="/tienda" className="hover:text-ink transition-colors">Tienda</Link>
-        <span aria-hidden>›</span>
-        <span className="text-ink truncate max-w-[180px]">{product.name}</span>
-      </nav>
+        {/* PDP grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1.05fr_0.95fr] gap-8 lg:gap-[clamp(32px,5vw,72px)] py-7 pb-20 items-start">
 
-      <div className="grid lg:grid-cols-[1fr_480px] gap-10 lg:gap-16">
-
-        <div className="flex flex-col gap-3">
-          <div className="relative aspect-square rounded-card overflow-hidden bg-sand shadow-card">
-            <img
-              src={product.images[activeImage]}
-              alt={`${product.name} — ${selectedColor?.name}`}
-              className="w-full h-full object-cover"
-            />
-            {product.isNew && (
-              <div className="absolute top-4 left-4">
-                <Badge variant="new">Nuevo</Badge>
-              </div>
-            )}
-          </div>
-
-          {product.images.length > 1 && (
-            <div className="flex gap-2">
-              {product.images.map((img, i) => (
+          {/* Gallery */}
+          <div className="grid grid-cols-[72px_1fr] gap-3.5 lg:sticky lg:top-24">
+            <div className="flex flex-col gap-2.5">
+              {product.images.map((src, i) => (
                 <button
                   key={i}
                   type="button"
                   onClick={() => setActiveImage(i)}
-                  className={`w-16 h-16 rounded-lg overflow-hidden border-2 transition-all duration-150 flex-shrink-0 ${
-                    activeImage === i ? 'border-ink' : 'border-transparent hover:border-line'
-                  }`}
-                  aria-label={`Imagen ${i + 1}`}
-                  aria-pressed={activeImage === i}
+                  className={`w-[72px] h-[84px] rounded-sm overflow-hidden border transition-colors bg-accent-tint ${i === activeImage ? 'border-ink' : 'border-transparent'}`}
                 >
-                  <img src={img} alt="" className="w-full h-full object-cover" />
+                  <Image src={src} alt="" fill className="object-cover mix-blend-multiply" sizes="72px" />
                 </button>
               ))}
             </div>
-          )}
-        </div>
-
-        <div className="flex flex-col gap-7">
-
-          <div>
-            <p className="text-xs font-sans text-ink-soft uppercase tracking-widest mb-2">
-              {product.category === 'scrunchies' && 'Scrunchies'}
-              {product.category === 'combo-descanso' && 'Combo Descanso'}
-              {product.category === 'gorros' && 'Gorros'}
-              {product.category === 'fundas' && 'Fundas'}
-            </p>
-            <h1 className="font-serif text-heading text-ink leading-tight">{product.name}</h1>
-            <p className="font-sans text-base text-ink-soft mt-2 leading-relaxed">
-              {product.shortDescription}
-            </p>
+            <div className="bg-accent-tint rounded-card overflow-hidden aspect-[1/1.06] relative">
+              <Image
+                src={product.images[activeImage]}
+                alt={product.name}
+                fill
+                className="object-cover mix-blend-multiply"
+                sizes="(max-width: 1024px) 100vw, 55vw"
+                priority
+              />
+            </div>
           </div>
 
-          <div className="flex flex-col gap-3 py-5 border-y border-line">
-            <PriceModeToggle mode={priceMode} onChange={setPriceMode} />
-            <PriceTag
-              detal={product.prices.detal}
-              mayor={product.prices.mayor}
-              mayorMin={product.prices.mayorMin}
-              mode={priceMode}
-              size="lg"
-            />
-          </div>
+          {/* Info */}
+          <div className="flex flex-col">
+            <span className="mono-label">{product.category}</span>
+            <h1 className="font-serif font-normal text-[clamp(36px,4vw,54px)] leading-[1.02] tracking-[-0.015em] mt-2.5 mb-1.5">
+              {product.name}
+            </h1>
+            <span className="font-serif italic text-[20px] text-accent-deep">{product.tagline}</span>
 
-          {product.colors.length > 0 && (
-            <div className="flex flex-col gap-3">
-              <div className="flex items-center justify-between">
-                <span className="font-sans text-sm font-medium text-ink">Color</span>
-                <span className="font-sans text-sm text-ink-soft">{selectedColor?.name}</span>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {product.colors.map(color => (
-                  <ColorSwatch
-                    key={color.slug}
-                    color={color}
-                    size="lg"
-                    selected={selectedColor?.slug === color.slug}
-                    onClick={() => setSelectedColor(color)}
-                  />
+            <div className="font-mono text-[19px] mt-5 mb-1">{formatPrice(product.prices.detal)}</div>
+            <span className="mono-label">
+              {(product.stock ?? 0) > 10 ? 'Disponible' : `Quedan ${product.stock ?? 0} unidades`} - Envio a toda Colombia
+            </span>
+
+            <p className="text-ink-soft mt-5 mb-7 max-w-[480px] text-pretty leading-relaxed">
+              {product.shortDescription || product.description}
+            </p>
+
+            {product.features.length > 0 && (
+              <div className="flex gap-2 flex-wrap mb-7">
+                {product.features.map(f => (
+                  <span key={f} className="feature-pill">{f}</span>
                 ))}
               </div>
-            </div>
-          )}
+            )}
 
-          <div className="flex flex-col gap-2">
-            <span className="font-sans text-sm font-medium text-ink">Cantidad</span>
-            <div className="flex items-center gap-3">
-              <div className="flex items-center border border-line rounded-pill overflow-hidden">
-                <button
-                  type="button"
-                  onClick={() => setQuantity(q => Math.max(1, q - 1))}
-                  className="w-10 h-10 flex items-center justify-center text-ink-soft hover:text-ink hover:bg-sand transition-colors"
-                  aria-label="Reducir cantidad"
-                >
-                  −
-                </button>
-                <span className="w-10 text-center font-sans text-sm font-medium text-ink">
-                  {quantity}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setQuantity(q => q + 1)}
-                  className="w-10 h-10 flex items-center justify-center text-ink-soft hover:text-ink hover:bg-sand transition-colors"
-                  aria-label="Aumentar cantidad"
-                >
-                  +
-                </button>
-              </div>
-              {priceMode === 'mayor' && (
-                <span className="text-xs font-sans text-ink-soft">
-                  mín. {product.prices.mayorMin} unidades
-                </span>
-              )}
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-3">
-            <button
-              type="button"
-              onClick={handleAddToCart}
-              className={`btn-primary justify-center py-4 text-base transition-all duration-300 ${
-                added ? 'bg-green-800' : ''
-              }`}
-            >
-              {added ? '✓ Agregado al carrito' : 'Agregar al carrito'}
-            </button>
-            <WhatsAppButton
-              message={waMessage}
-              label="Pedir directamente por WhatsApp"
-              className="justify-center py-4"
-            />
-          </div>
-
-          <div className="pt-2 border-t border-line">
-            <h2 className="font-sans text-xs uppercase tracking-widest text-ink-soft mb-3 font-medium">
-              Descripción
-            </h2>
-            <p className="font-sans text-sm text-ink-soft leading-relaxed">{product.description}</p>
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            {product.tags.map(tag => (
-              <span
-                key={tag}
-                className="text-xs font-sans text-ink-soft bg-sand-dark px-3 py-1 rounded-pill"
+            <div className="flex gap-3 items-stretch mb-3">
+              <QtyStepper value={quantity} onChange={setQuantity} max={product.stock ?? 99} />
+              <button
+                type="button"
+                onClick={handleAdd}
+                className="btn btn-primary flex-1"
               >
-                #{tag}
-              </span>
-            ))}
+                Agregar a la bolsa · {formatPrice(product.prices.detal * quantity)}
+              </button>
+            </div>
+
+            <a
+              href={`https://wa.me/${waNumber}?text=${encodeURIComponent(waMessage)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-accent btn-block"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <path d="M12 3.5a8.5 8.5 0 0 0-7.3 12.8L3.5 20.5l4.3-1.1A8.5 8.5 0 1 0 12 3.5Z" strokeLinejoin="round" />
+                <path d="M9 9.3c0 3 2.7 5.7 5.7 5.7l1.3-1.4-1.9-1.2-1 .7a4.6 4.6 0 0 1-2.2-2.2l.7-1-1.2-1.9L9 9.3Z" strokeLinejoin="round" />
+              </svg>
+              Pedir ahora por WhatsApp
+            </a>
+
+            {/* Accordion */}
+            <div className="accordion">
+              {accordions.map(a => (
+                <div key={a.id} className="accordion-item">
+                  <button
+                    type="button"
+                    className="accordion-trigger"
+                    onClick={() => setOpenAcc(openAcc === a.id ? null : a.id)}
+                  >
+                    {a.label}
+                    <span className="font-serif italic text-[20px] text-accent-deep">
+                      {openAcc === a.id ? '-' : '+'}
+                    </span>
+                  </button>
+                  {openAcc === a.id && (
+                    <div className="accordion-body">{a.body}</div>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
 
-      {related.length > 0 && (
-        <section className="mt-20 pt-12 border-t border-line">
-          <h2 className="section-title mb-8">También te puede gustar</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 lg:gap-5">
-            {related.map(p => (
-              <ProductCard key={p.id} product={p} priceMode={priceMode} />
-            ))}
-          </div>
-        </section>
-      )}
-    </div>
+        {/* Related */}
+        {related.length > 0 && (
+          <section className="section border-t border-line">
+            <div className="flex items-end justify-between gap-6 mb-9">
+              <div>
+                <span className="mono-label">Completa el ritual</span>
+                <h2 className="font-serif font-normal text-[clamp(30px,3.4vw,44px)] leading-[1.05] tracking-[-0.015em] mt-2.5">
+                  También te puede <em className="italic text-accent-deep">gustar</em>
+                </h2>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-5 lg:gap-[22px]">
+              {related.map(p => (
+                <ProductCard key={p.id} product={p} />
+              ))}
+            </div>
+          </section>
+        )}
+      </div>
+    </main>
   )
 }

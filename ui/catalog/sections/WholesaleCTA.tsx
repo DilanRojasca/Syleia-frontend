@@ -36,7 +36,7 @@ export function WholesaleCTA() {
             </p>
             <div className="flex flex-col sm:flex-row gap-3 pt-2">
               <WhatsAppButton
-                message="¡Hola Syleia! Me interesa el programa de mayoristas 🌸"
+                message="¡Hola SATINA! Me interesa el programa de mayoristas 🌸"
                 label="Quiero ser mayorista"
               />
             </div>

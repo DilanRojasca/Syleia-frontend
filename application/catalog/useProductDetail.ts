@@ -1,7 +1,10 @@
-import { useMemo } from 'react'
-import type { Product } from '@/domain/catalog/types'
+import { useQuery } from '@tanstack/react-query'
 import { productRepository } from '@/infrastructure/catalog/productRepository'
 
-export function useProductDetail(slug: string): Product | undefined {
-  return useMemo(() => productRepository.getBySlug(slug), [slug])
+export function useProductDetail(slug: string) {
+  return useQuery({
+    queryKey: ['product', slug],
+    queryFn: () => productRepository.getBySlug(slug),
+    enabled: !!slug,
+  })
 }
