@@ -70,10 +70,7 @@ const MOCK_PRODUCTS: Product[] = [
     category: 'Peinado',
     prices: { detal: 28000, mayor: 22000, mayorMin: 6 },
     colors: [],
-    images: [
-      cld('v1781026942/WhatsApp_Image_2026-06-09_at_12.38.45_1_e2ecyf.jpg'),
-      cld('v1781026939/WhatsApp_Image_2026-06-09_at_12.38.45_6_hgu4ru.jpg'),
-    ],
+    images: [cld('v1781026942/WhatsApp_Image_2026-06-09_at_12.38.45_1_e2ecyf.jpg')],
     features: ['Ondas sin calor', 'Peinado natural', 'Reduce el quiebre'],
     tags: ['satín', 'peinado', 'ondas'],
     featured: false,
@@ -151,11 +148,19 @@ class MockProductRepository implements IProductRepository {
   }
 }
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL
+// In the browser we go through the same-origin Next.js rewrite (/api/backend)
+// to avoid CORS entirely; on the server we hit the backend directly.
+const API_URL =
+  typeof window === 'undefined'
+    ? process.env.NEXT_PUBLIC_API_URL
+    : process.env.NEXT_PUBLIC_API_URL && '/api/backend'
 
+// c_limit scales the image down to fit inside 800x800 without cropping it.
+// Any transformation segments already present in the URL are stripped first
+// so they don't stack with this one.
 function optimizeCloudinaryUrl(url: string): string {
   if (!url.includes('res.cloudinary.com')) return url
-  return url.replace('/upload/', '/upload/w_800,h_800,c_fill,f_webp,q_auto/')
+  return url.replace(/\/upload\/(?:[^/]*,[^/]*\/)*/, '/upload/w_800,h_800,c_limit,f_auto,q_auto/')
 }
 
 function normalizeProduct(p: Product): Product {
@@ -189,6 +194,8 @@ class ApiProductRepository implements IProductRepository {
   }
 }
 
-// Use MockProductRepository until the backend is updated to match the new product schema.
-// Switch to ApiProductRepository once the NestJS backend serves the new categories and fields.
-export const productRepository: IProductRepository = new MockProductRepository()
+// The backend now serves the new product schema. Falls back to mock data
+// when NEXT_PUBLIC_API_URL is not configured (e.g. offline development).
+export const productRepository: IProductRepository = API_URL
+  ? new ApiProductRepository()
+  : new MockProductRepository()

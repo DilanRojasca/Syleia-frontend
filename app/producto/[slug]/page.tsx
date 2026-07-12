@@ -117,9 +117,9 @@ export default function ProductDetailPage() {
                   key={i}
                   type="button"
                   onClick={() => setActiveImage(i)}
-                  className={`w-[72px] h-[84px] rounded-sm overflow-hidden border transition-colors bg-accent-tint ${i === activeImage ? 'border-ink' : 'border-transparent'}`}
+                  className={`relative w-[72px] h-[84px] rounded-sm overflow-hidden border transition-colors bg-accent-tint ${i === activeImage ? 'border-ink' : 'border-transparent'}`}
                 >
-                  <Image src={src} alt="" fill className="object-cover mix-blend-multiply" sizes="72px" />
+                  <Image src={src} alt="" fill className="object-contain mix-blend-multiply" sizes="72px" />
                 </button>
               ))}
             </div>
@@ -128,7 +128,7 @@ export default function ProductDetailPage() {
                 src={product.images[activeImage]}
                 alt={product.name}
                 fill
-                className="object-cover mix-blend-multiply"
+                className="object-contain mix-blend-multiply"
                 sizes="(max-width: 1024px) 100vw, 55vw"
                 priority
               />
