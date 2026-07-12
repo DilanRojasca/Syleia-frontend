@@ -47,9 +47,9 @@
   .btn-block { @apply w-full; }
   .btn[disabled] { @apply opacity-40 pointer-events-none; }
 
-  /* --- Mono label --- */
+  /* --- Mono label — verde salvia: subtítulos e info secundaria --- */
   .mono-label {
-    @apply font-mono text-[11px] tracking-[0.18em] uppercase text-ink-soft;
+    @apply font-mono text-[11px] tracking-[0.18em] uppercase text-salvia-deep;
   }
 
   /* --- Cards --- */
@@ -106,10 +106,10 @@
     @apply pb-5 px-0.5 text-[14px] text-ink-soft max-w-[480px];
   }
 
-  /* --- Feature pills --- */
+  /* --- Feature pills — verde salvia: información complementaria --- */
   .feature-pill {
     @apply font-mono text-[10.5px] tracking-[0.1em] uppercase
-           px-3 py-1.5 bg-accent-tint text-accent-deep rounded-pill;
+           px-3 py-1.5 bg-salvia-tint text-salvia-deep rounded-pill;
   }
 
   /* --- Status badges --- */

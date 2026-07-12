@@ -12,23 +12,40 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        bg: '#ECE6DA',
+        bg: '#F7F3EC',
         sand: {
-          DEFAULT: '#ECE6DA',
-          dark: '#E2DAC8',
+          DEFAULT: '#F7F3EC',
+          dark: '#EFE8DD',
         },
-        paper: '#F4EFE3',
+        paper: '#FCFAF6',
+        // Negro — color principal: títulos y logotipo
         ink: {
-          DEFAULT: '#3B342B',
-          soft: '#6B6055',
+          DEFAULT: '#000000',
+          soft: '#5F5B55',
         },
-        line: '#BDB2A1',
-        'line-soft': '#CDC5B5',
+        line: '#DCD4C8',
+        'line-soft': '#E6DFD4',
+        // Rosa empolvado #E4A7AC — color secundario: palabras destacadas
         accent: {
-          DEFAULT: '#CCA09D',
-          deep: '#B5625C',
-          tint: '#F4EDED',
-          'tint-2': '#EDE2E1',
+          DEFAULT: '#E4A7AC',
+          deep: '#C9838A',
+          tint: '#F9EEEF',
+          'tint-2': '#F3E3E5',
+        },
+        // Verde salvia #B0BCA4 — color de apoyo: subtítulos e info secundaria
+        salvia: {
+          DEFAULT: '#B0BCA4',
+          deep: '#7E8B72',
+          tint: '#EFF2EA',
+        },
+        // Dorado y lila — acentos complementarios de la paleta
+        gold: {
+          DEFAULT: '#D4AB6D',
+          tint: '#F7EFE1',
+        },
+        lilac: {
+          DEFAULT: '#C5B0CF',
+          tint: '#F4EFF6',
         },
       },
       fontFamily: {

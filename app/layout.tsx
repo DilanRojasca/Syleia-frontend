@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Cormorant_Garamond, Manrope, JetBrains_Mono } from 'next/font/google'
+import { Cormorant_Garamond, DM_Sans, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
 import { Providers } from './providers'
 import { Header } from '@/shared/layout/Header'
@@ -13,7 +13,7 @@ const cormorant = Cormorant_Garamond({
   weight: ['400', '500'],
 })
 
-const manrope = Manrope({
+const dmSans = DM_Sans({
   subsets: ['latin'],
   variable: '--font-sans',
   display: 'swap',
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es" className={`${cormorant.variable} ${manrope.variable} ${jetbrainsMono.variable}`}>
+    <html lang="es" className={`${cormorant.variable} ${dmSans.variable} ${jetbrainsMono.variable}`}>
       <body>
         <Providers>
           <div className="min-h-screen flex flex-col">
